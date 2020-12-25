@@ -1172,7 +1172,7 @@ Modelica source.
     parameter Boolean EnthalpyNotUsed = false;
 
     parameter Pressure IntrathoraxPressure = system.p_ambient - 700;
-    parameter Frequency RespirationRate=0.133                                                                "Respiration rate";
+    parameter Frequency RespirationRate=0.08                                                               "Respiration rate";
     parameter Volume ResidualVolume=0.0013                                                      "Lungs residual volume";
     parameter Volume TotalLungCapacity=0.00623                                                      "Total Lung Capacity";
     parameter Volume BaseTidalVolume=0.0005                                                      "Base Tidal Volume";
