@@ -20,11 +20,9 @@ package Kitware
 
     package stateOfMatter = Chemical.Interfaces.IdealGas
     "Substances model to translate data into substance properties";
-    constant Modelica.SIunits.MoleFraction x_default[nCS]=
-     {0.21,
-      0.0004,
-      0.02,
-      0.7696} "Initial mole fractions of all substances (Please check: x_default*ones(nCS) = 1)";
+    constant Modelica.Units.SI.MoleFraction x_default[nCS]={0.21,0.0004,
+        0.02,0.7696}
+      "Initial mole fractions of all substances (Please check: x_default*ones(nCS) = 1)";
 
     constant Integer nCS=4 "Number of chemical substances";
 
@@ -51,7 +49,7 @@ package Kitware
       h = X*(stateOfMatter.molarEnthalpy(substanceData,T=T,p=p) ./ substanceData.MolarWeight);
       u = h - p/d;
       MM = (X*ones(nCS)) / ((X./substanceData.MolarWeight) * ones(nCS));
-      R = 8.3144/MM;
+      R_s = 8.3144/MM;
       state.X = X;
       state.p = p;
       state.T = T;
@@ -85,7 +83,8 @@ package Kitware
     redeclare function extends specificEntropy "Return specific entropy"
     protected
       Real a[nCS] "activity of substance";
-      Modelica.SIunits.MolarEnergy u[nCS] "electro-chemical potential of substances in the solution";
+      Modelica.Units.SI.MolarEnergy u[nCS]
+        "electro-chemical potential of substances in the solution";
     algorithm
       a := stateOfMatter.activityCoefficient(substanceData);
 
@@ -134,7 +133,7 @@ package Kitware
     end pressure;
 
     function C_outflow
-     input Modelica.SIunits.MassFraction x_mass[nCS];
+      input Modelica.Units.SI.MassFraction x_mass[nCS];
      output Real C_outflow[nC];
     algorithm
       C_outflow := C_default;
@@ -142,17 +141,17 @@ package Kitware
     end C_outflow;
 
     function Xi_outflow
-      input Modelica.SIunits.MassFraction x_mass[nCS];
-      output Modelica.SIunits.MassFraction Xi[nXi];
+      input Modelica.Units.SI.MassFraction x_mass[nCS];
+      output Modelica.Units.SI.MassFraction Xi[nXi];
     algorithm
       Xi := x_mass;
       annotation(Inline=true);
     end Xi_outflow;
 
     function x_mass
-      input Modelica.SIunits.MassFraction actualStream_Xi[nXi];
+      input Modelica.Units.SI.MassFraction actualStream_Xi[nXi];
       input Real actualStream_C[nC];
-      output Modelica.SIunits.MassFraction x_mass[nCS];
+      output Modelica.Units.SI.MassFraction x_mass[nCS];
     algorithm
       x_mass := actualStream_Xi;
       annotation(Inline=true);
@@ -160,15 +159,15 @@ package Kitware
 
     function concentration "Concentration of base substance molecules from Xi and C"
       input ThermodynamicState state;
-      input Modelica.SIunits.MassFraction Xi[nXi];
+      input Modelica.Units.SI.MassFraction Xi[nXi];
       input Real C[nC];
-      output Modelica.SIunits.Concentration concentration[nCS];
+      output Modelica.Units.SI.Concentration concentration[nCS];
     algorithm
       concentration := (Xi./substanceData.MolarWeight)/(Xi*(stateOfMatter.molarVolume(substanceData,T=state.T,p=state.p)./substanceData.MolarWeight));
     end concentration;
 
     function specificEnthalpyOffsets "Difference between chemical substance enthalpy and medium substance enthalpy at temperature 298.15 K and 100kPa"
-      input Modelica.SIunits.ElectricPotential v=0;
+      input Modelica.Units.SI.ElectricPotential v=0;
       input Real I=0;
       output SpecificEnthalpy h[nCS];
     algorithm
@@ -188,7 +187,7 @@ Modelica source.
   model RespirationMuscle "Respiration model"
     extends Modelica.Icons.Example;
 
-    import Modelica.SIunits.*;
+    import Modelica.Units.SI.*;
 
     replaceable package Air = Chemical.Media.Air_MixtureGasNasa;
 
@@ -275,7 +274,7 @@ Modelica source.
       nPorts=1) "Lungs"
       annotation (Placement(transformation(extent={{36,-28},{56,-8}})));
 
-    import Modelica.SIunits.*;
+    import Modelica.Units.SI.*;
     replaceable package Air = Kitware.Air_IdealGas;
   //  Chemical.Media.SimpleAir_C;
    //  Chemical.Media.Air_MixtureGasNasa;
@@ -315,7 +314,7 @@ Modelica source.
     Physiolibrary.Types.Constants.PressureConst ambient_pressure(k=system.p_ambient)
       annotation (Placement(transformation(extent={{84,50},{74,58}})));
       Pressure pressue;
-    Modelica.Blocks.Sources.Clock clock(offset=-4000)
+    Modelica.Blocks.Sources.ContinuousClock clock(offset=-4000)
       annotation (Placement(transformation(extent={{-38,50},{-18,70}})));
     Physiolibrary.Fluid.Sources.PressureSource environment(redeclare
         package
@@ -379,7 +378,7 @@ Modelica source.
       nPorts=2) "Lungs"
       annotation (Placement(transformation(extent={{36,-28},{56,-8}})));
 
-    import Modelica.SIunits.*;
+    import Modelica.Units.SI.*;
     replaceable package Air = Chemical.Media.Water_Incompressible;// Chemical.Media.SimpleAir_C;
      //Chemical.Media.Air_MixtureGasNasa;
 
@@ -420,7 +419,7 @@ Modelica source.
     Physiolibrary.Types.Constants.PressureConst ambient_pressure(k=system.p_ambient)
       annotation (Placement(transformation(extent={{84,50},{74,58}})));
       Pressure pressue;
-    Modelica.Blocks.Sources.Clock clock(offset=-4000)
+    Modelica.Blocks.Sources.ContinuousClock clock(offset=-4000)
       annotation (Placement(transformation(extent={{-38,50},{-18,70}})));
     Physiolibrary.Fluid.Sources.PressureSource environment(redeclare
         package
@@ -479,7 +478,7 @@ Modelica source.
       nPorts=2) "Lungs"
       annotation (Placement(transformation(extent={{36,-28},{56,-8}})));
 
-    import Modelica.SIunits.*;
+    import Modelica.Units.SI.*;
 
     replaceable package Air =  Chemical.Media.Water_Incompressible; //Chemical.Media.Air_MixtureGasNasa;
 
@@ -611,7 +610,7 @@ Modelica source.
   model MinimalRespiration "Minimal respiration model"
     extends Modelica.Icons.Example;
 
-    import Modelica.SIunits.*;
+    import Modelica.Units.SI.*;
 
     replaceable package Air = Chemical.Media.Air_MixtureGasNasa;
 
@@ -733,7 +732,7 @@ Modelica source.
   model Respiration2 "Minimal respiration model"
     extends Modelica.Icons.Example;
 
-    import Modelica.SIunits.*;
+    import Modelica.Units.SI.*;
 
     replaceable package Air = Chemical.Media.Air_MixtureGasNasa;
     replaceable package PleuralFluid =
@@ -921,7 +920,7 @@ Modelica source.
   model Respiration3 "Respiration model"
     extends Modelica.Icons.Example;
 
-    import Modelica.SIunits.*;
+    import Modelica.Units.SI.*;
 
     replaceable package Air = Chemical.Media.Air_MixtureGasNasa;
     replaceable package PleuralFluid =
@@ -1011,8 +1010,7 @@ Modelica source.
       "External environment"
       annotation (Placement(transformation(extent={{-356,-10},{-336,10}})));
 
-    Physiolibrary.Fluid.Components.Resistor leftBronchi(redeclare package
-                                                                          Medium =
+    Physiolibrary.Fluid.Components.Resistor leftBronchi(redeclare package Medium =
           Air,
       EnthalpyNotUsed=true,
       Resistance=LeftBronchiResistance + LeftAlveoliResistance)
@@ -1036,8 +1034,7 @@ Modelica source.
     Physiolibrary.Types.Constants.PressureConst ambient_pressure(k=
           IntrathoraxPressure)
       annotation (Placement(transformation(extent={{84,44},{74,52}})));
-    Physiolibrary.Fluid.Components.Resistor rightBronchi(redeclare
-        package
+    Physiolibrary.Fluid.Components.Resistor rightBronchi(redeclare package
         Medium =
           Air,
       EnthalpyNotUsed=true,
@@ -1163,7 +1160,7 @@ Modelica source.
   model PulseRespiration "Minimal respiration model"
     extends Modelica.Icons.Example;
 
-    import Modelica.SIunits.*;
+    import Modelica.Units.SI.*;
 
     replaceable package Air = Chemical.Media.SimpleAir_C; //Kitware.Air_IdealGas; //Chemical.Media.SimpleAir_C; //Chemical.Media.Air_MixtureGasNasa;
     replaceable package PleuralFluid =
@@ -1229,7 +1226,6 @@ Modelica source.
 
 
     Physiolibrary.Fluid.Components.ElasticVessel leftAlveoli(
-      ConstantTemperature=true,
       redeclare package Medium = Air,
       volume_start=LungsAirVolume_initial,
       ZeroPressureVolume=FunctionalResidualCapacity,
@@ -1285,15 +1281,13 @@ Modelica source.
     Physiolibrary.Types.Constants.PressureConst ambient_pressure(k=
           IntrathoraxPressure)
       annotation (Placement(transformation(extent={{84,44},{74,52}})));
-    Physiolibrary.Fluid.Components.Resistor rightBronchi(redeclare
-        package
+    Physiolibrary.Fluid.Components.Resistor rightBronchi(redeclare package
         Medium =
           Air,
       EnthalpyNotUsed=EnthalpyNotUsed,
       Resistance=RightBronchiResistance)
       annotation (Placement(transformation(extent={{-252,-54},{-232,-34}})));
     Physiolibrary.Fluid.Components.ElasticVessel rightAlveoli(
-      ConstantTemperature=true,
       redeclare package Medium = Air,
       volume_start=LungsAirVolume_initial,
       ZeroPressureVolume=FunctionalResidualCapacity,
@@ -1514,7 +1508,7 @@ Modelica source.
   end PulseRespiration;
 
   model check_Medium
-    import Modelica.SIunits.*;
+    import Modelica.Units.SI.*;
 
     package Medium =
     Kitware.Air_IdealGas;
@@ -1600,7 +1594,7 @@ Modelica source.
   model PulseRespiration2 "Minimal respiration model"
     extends Modelica.Icons.Example;
 
-    import Modelica.SIunits.*;
+    import Modelica.Units.SI.*;
 
     replaceable package Air = Kitware.Air_IdealGas; //Chemical.Media.SimpleAir_C; //Chemical.Media.Air_MixtureGasNasa;
     replaceable package PleuralFluid =
@@ -1671,8 +1665,8 @@ Modelica source.
       MinimalCollapsingPressure(displayUnit="mmHg") = 13332.2387415,
       nPorts=2) annotation (Placement(transformation(extent={{-328,-10},{
               -308,10}})));
-    Chemical.Sources.PureSubstance water(redeclare package stateOfMatter
-        = Chemical.Interfaces.Incompressible, substanceData=
+    Chemical.Sources.PureSubstance water(redeclare package stateOfMatter =
+          Chemical.Interfaces.Incompressible, substanceData=
           Chemical.Substances.Water_liquid()) annotation (Placement(
           transformation(
           extent={{-10,-10},{10,10}},
@@ -1712,8 +1706,8 @@ Modelica source.
     connect(gasSolubility1.gas_port, upperRespiratoryTract.substances[3])
       annotation (Line(points={{-352,-28},{-352,2},{-328,2},{-328,0}},
           color={158,66,200}));
-    connect(upperRespiratoryTract.q_in[1], massFraction.port) annotation
-      (Line(
+    connect(upperRespiratoryTract.q_in[1], massFraction.port) annotation (
+       Line(
         points={{-318.1,1.3},{-318.1,32},{-292,32},{-292,42}},
         color={127,0,0},
         thickness=0.5));
@@ -1740,7 +1734,10 @@ Modelica source.
 </html>"));
   end PulseRespiration2;
   annotation (uses(
-      Modelica(version="3.2.3"),
-      Chemical(version="1.4.0-alpha2"),
-      Physiolibrary(version="3.0.0-alpha2")));
+      Modelica(version="4.0.0"),
+      Chemical(version="1.4.0-alpha3"),
+      Physiolibrary(version="3.0.0-alpha3")),
+    version="1",
+    conversion(from(version="", script=
+            "modelica://Kitware/ConvertFromKitware_.mos")));
 end Kitware;
